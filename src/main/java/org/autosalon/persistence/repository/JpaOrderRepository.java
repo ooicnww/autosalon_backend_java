@@ -123,4 +123,9 @@ public class JpaOrderRepository implements IOrderRepository {
 
         throw new RuntimeException("Неизвестный тип заказа");
     }
+
+    @Override
+    public List<Order> findByUserId(UUID userId) {
+        return jpaRepository.findByClient_IdAndRemovedFalse(userId).stream().map(this::toDomain).toList();
+    }
 }

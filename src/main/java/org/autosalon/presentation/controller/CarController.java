@@ -5,6 +5,7 @@ import org.autosalon.domain.model.entities.car.Car;
 import org.autosalon.domain.model.entities.car.CarModel;
 import org.autosalon.presentation.dto.CarDto;
 import org.autosalon.mapper.mapperDto.CarDtoMapper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -22,21 +23,26 @@ public class CarController {
         this.carService = carService;
         this.mapper = mapper;
     }
+
+    @PreAuthorize("hasAnyRole('USER','MANAGER','ADMIN')")
     @GetMapping
     public List<CarDto> getAllCars() {
         return carService.getAllCars().stream().map(mapper::toDto).toList();
     }
 
+    @PreAuthorize("hasAnyRole('USER','MANAGER','ADMIN')")
     @GetMapping("/id")
     public CarDto getCarById(@PathVariable UUID id){
         return carService.getCarById(id).map(mapper::toDto).orElseThrow(() -> new RuntimeException("Машина не найдена"));
     }
 
+    @PreAuthorize("hasAnyRole('WAREHOUSE_ADMIN','ADMIN')")
     @PostMapping
     public void createCar(@RequestBody CarDto dto) {
         carService.addCar(dto);
     }
 
+    @PreAuthorize("hasAnyRole('WAREHOUSE_ADMIN','ADMIN')")
     @PutMapping("/{id}")
     public void updateCar(@PathVariable UUID id, @RequestBody CarDto dto) {
 
@@ -51,9 +57,11 @@ public class CarController {
         carService.updateCar(updatedDto);
     }
 
+    @PreAuthorize("hasAnyRole('WAREHOUSE_ADMIN','ADMIN')")
     @DeleteMapping("/{id}")
     public void deleteCar(@PathVariable UUID id) {
         carService.deleteCar(id);
     }
+
 
 }

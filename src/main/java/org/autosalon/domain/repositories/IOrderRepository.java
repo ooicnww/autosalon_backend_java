@@ -13,5 +13,7 @@ public interface IOrderRepository{
 
     List<Order> findAll();
 
+    List<Order> findByUserId(UUID userId);
+
     void delete(UUID id);
 }

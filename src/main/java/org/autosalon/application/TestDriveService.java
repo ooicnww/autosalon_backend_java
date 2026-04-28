@@ -1,5 +1,6 @@
 package org.autosalon.application;
 
+import org.autosalon.config.SecurityUtils;
 import org.autosalon.domain.exceptions.EntityNotFoundException;
 import org.autosalon.domain.model.entities.car.Car;
 import org.autosalon.domain.model.entities.testDrive.TestRequest;
@@ -27,8 +28,19 @@ public class TestDriveService {
         this.carRepository = carRepository;
     }
 
-    public TestRequest createTestRequest(UUID clientId, UUID carId, LocalDateTime dateTime){
 
+    private void checkOwner(TestRequest request) {
+        if (SecurityUtils.hasRole("ADMIN")) {
+            return;
+        }
+        UUID currentUserId = SecurityUtils.getCurrentUserId();
+        if (!request.getClient().getId().equals(currentUserId)) {
+            throw new RuntimeException("Доступ запрещен");
+        }
+    }
+
+    public TestRequest createTestRequest(UUID carId, LocalDateTime dateTime){
+        UUID clientId = SecurityUtils.getCurrentUserId();
         User user = userRepository.findById(clientId).orElseThrow(() -> new RuntimeException("Юзер не найден"));
 
         if (!(user instanceof Client client)) {
@@ -52,6 +64,9 @@ public class TestDriveService {
     }
 
     public void delete(UUID id) {
+        TestRequest request = repository.findById(id).orElseThrow(() -> new RuntimeException("Не найдено"));
+        checkOwner(request);
+
         repository.delete(id);
     }
 }

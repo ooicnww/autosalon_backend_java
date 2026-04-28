@@ -5,6 +5,7 @@ import org.autosalon.domain.model.entities.testDrive.TestRequest;
 import org.autosalon.mapper.mapperDto.TestRequestDtoMapper;
 import org.autosalon.presentation.dto.TestRequestRequestDto;
 import org.autosalon.presentation.dto.TestRequestResponseDto;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,11 +23,11 @@ public class TestRequestController {
         this.mapper = mapper;
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping
     public TestRequestResponseDto create(@RequestBody TestRequestRequestDto dto) {
 
         TestRequest request = service.createTestRequest(
-                dto.clientId(),
                 dto.carId(),
                 dto.dateTime()
         );
@@ -34,17 +35,21 @@ public class TestRequestController {
         return mapper.toDto(request);
     }
 
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
     @GetMapping
     public List<TestRequestResponseDto> getAll() {
         return service.getAllRequests().stream().map(mapper::toDto).toList();
     }
 
+
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
     @GetMapping("/{id}")
     public TestRequestResponseDto getById(@PathVariable UUID id) {
         TestRequest request = service.getById(id);
         return mapper.toDto(request);
     }
 
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable UUID id) {
         service.delete(id);
