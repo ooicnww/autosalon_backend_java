@@ -1,0 +1,681 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 1
+      author: you
+      changes:
+        - createTable:
+            tableName: car_models
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: brand
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: model_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: body_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: fuel_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: transmission_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: drive_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: base_price
+                  type: int
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: engine_power
+                  type: int
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: engine_capacity
+                  type: int
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: removed
+                  type: boolean
+                  constraints:
+                    nullable: false
+
+
+  - changeSet:
+      id: 2
+      author: you
+      changes:
+        - createTable:
+            tableName: car_components
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: price
+                  type: int
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: removed
+                  type: boolean
+                  constraints:
+                    nullable: false
+
+
+  - changeSet:
+      id: 3
+      author: you
+      changes:
+        - createTable:
+            tableName: component_model
+            columns:
+              - column:
+                  name: component_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: model_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            tableName: component_model
+            columnNames: component_id, model_id
+            constraintName: pk_component_model
+
+        - addForeignKeyConstraint:
+            baseTableName: component_model
+            baseColumnNames: component_id
+            referencedTableName: car_components
+            referencedColumnNames: id
+            constraintName: fk_component_model_component
+
+        - addForeignKeyConstraint:
+            baseTableName: component_model
+            baseColumnNames: model_id
+            referencedTableName: car_models
+            referencedColumnNames: id
+            constraintName: fk_component_model_model
+
+
+  - changeSet:
+      id: 4
+      author: you
+      changes:
+        - createTable:
+            tableName: cars
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: model_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: color
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: available
+                  type: boolean
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: price
+                  type: int
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: removed
+                  type: boolean
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: cars
+            baseColumnNames: model_id
+            referencedTableName: car_models
+            referencedColumnNames: id
+            constraintName: fk_cars_model
+
+  - changeSet:
+      id: 5
+      author: you
+      changes:
+        - createTable:
+            tableName: car_configurations
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: model_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: total_price
+                  type: int
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: removed
+                  type: boolean
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: car_configurations
+            baseColumnNames: model_id
+            referencedTableName: car_models
+            referencedColumnNames: id
+            constraintName: fk_config_model
+
+
+  - changeSet:
+      id: 6
+      author: you
+      changes:
+        - createTable:
+            tableName: configuration_components
+            columns:
+
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: configuration_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: component_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: removed
+                  type: boolean
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: configuration_components
+            columnNames: configuration_id, type
+            constraintName: uq_config_component_type
+
+        - addForeignKeyConstraint:
+            baseTableName: configuration_components
+            baseColumnNames: configuration_id
+            referencedTableName: car_configurations
+            referencedColumnNames: id
+            constraintName: fk_config
+
+        - addForeignKeyConstraint:
+            baseTableName: configuration_components
+            baseColumnNames: component_id
+            referencedTableName: car_components
+            referencedColumnNames: id
+            constraintName: fk_component_config
+
+
+  - changeSet:
+      id: 7
+      author: you
+      changes:
+        - createTable:
+            tableName: car_model_default_components
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: model_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: component_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: removed
+                  type: boolean
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: car_model_default_components
+            columnNames: model_id, type
+            constraintName: uq_model_component_type
+
+        - addForeignKeyConstraint:
+            baseTableName: car_model_default_components
+            baseColumnNames: model_id
+            referencedTableName: car_models
+            referencedColumnNames: id
+            constraintName: fk_default_model
+
+        - addForeignKeyConstraint:
+            baseTableName: car_model_default_components
+            baseColumnNames: component_id
+            referencedTableName: car_components
+            referencedColumnNames: id
+            constraintName: fk_default_component
+
+
+  - changeSet:
+      id: 8
+      author: you
+      changes:
+
+        - insert:
+            tableName: car_models
+            columns:
+              - column: { name: id, value: 33333333-3333-3333-3333-333333333333 }
+              - column: { name: brand, value: BMW }
+              - column: { name: model_name, value: M3 }
+              - column: { name: body_type, value: SEDAN }
+              - column: { name: fuel_type, value: PETROL }
+              - column: { name: transmission_type, value: AUTOMATIC }
+              - column: { name: drive_type, value: REAR }
+              - column: { name: base_price, value: 50000 }
+              - column: { name: engine_power, value: 400 }
+              - column: { name: engine_capacity, value: 3000 }
+              - column: { name: created_at, valueDate: NOW() }
+              - column: { name: updated_at, valueDate: NOW() }
+              - column: { name: removed, valueBoolean: false }
+
+        - insert:
+            tableName: car_components
+            columns:
+              - column: { name: id, value: aaaaaaaa-0000-0000-0000-000000000001 }
+              - column: { name: type, value: WHEEL }
+              - column: { name: name, value: Wheels }
+              - column: { name: price, value: 1000 }
+              - column: { name: created_at, valueDate: NOW() }
+              - column: { name: updated_at, valueDate: NOW() }
+              - column: { name: removed, valueBoolean: false }
+
+        - insert:
+            tableName: car_components
+            columns:
+              - column: { name: id, value: aaaaaaaa-0000-0000-0000-000000000002 }
+              - column: { name: type, value: TRANSMISSION }
+              - column: { name: name, value: Automatic }
+              - column: { name: price, value: 0 }
+              - column: { name: created_at, valueDate: NOW() }
+              - column: { name: updated_at, valueDate: NOW() }
+              - column: { name: removed, valueBoolean: false }
+
+        - insert:
+            tableName: car_components
+            columns:
+              - column: { name: id, value: aaaaaaaa-0000-0000-0000-000000000003 }
+              - column: { name: type, value: STEERING }
+              - column: { name: name, value: Steering }
+              - column: { name: price, value: 0 }
+              - column: { name: created_at, valueDate: NOW() }
+              - column: { name: updated_at, valueDate: NOW() }
+              - column: { name: removed, valueBoolean: false }
+
+        - insert:
+            tableName: car_components
+            columns:
+              - column: { name: id, value: aaaaaaaa-0000-0000-0000-000000000004 }
+              - column: { name: type, value: INTERIOR }
+              - column: { name: name, value: Interior }
+              - column: { name: price, value: 0 }
+              - column: { name: created_at, valueDate: NOW() }
+              - column: { name: updated_at, valueDate: NOW() }
+              - column: { name: removed, valueBoolean: false }
+
+        - insert:
+            tableName: component_model
+            columns:
+              - column: { name: component_id, value: aaaaaaaa-0000-0000-0000-000000000001 }
+              - column: { name: model_id, value: 33333333-3333-3333-3333-333333333333 }
+
+        - insert:
+            tableName: component_model
+            columns:
+              - column: { name: component_id, value: aaaaaaaa-0000-0000-0000-000000000002 }
+              - column: { name: model_id, value: 33333333-3333-3333-3333-333333333333 }
+
+        - insert:
+            tableName: component_model
+            columns:
+              - column: { name: component_id, value: aaaaaaaa-0000-0000-0000-000000000003 }
+              - column: { name: model_id, value: 33333333-3333-3333-3333-333333333333 }
+
+        - insert:
+            tableName: component_model
+            columns:
+              - column: { name: component_id, value: aaaaaaaa-0000-0000-0000-000000000004 }
+              - column: { name: model_id, value: 33333333-3333-3333-3333-333333333333 }
+
+        - insert:
+            tableName: car_model_default_components
+            columns:
+              - column: { name: id, value: dddddddd-0000-0000-0000-000000000001 }
+              - column: { name: model_id, value: 33333333-3333-3333-3333-333333333333 }
+              - column: { name: component_id, value: aaaaaaaa-0000-0000-0000-000000000001 }
+              - column: { name: type, value: WHEEL }
+              - column: { name: created_at, valueDate: NOW() }
+              - column: { name: updated_at, valueDate: NOW() }
+              - column: { name: removed, valueBoolean: false }
+
+        - insert:
+            tableName: car_model_default_components
+            columns:
+              - column: { name: id, value: dddddddd-0000-0000-0000-000000000002 }
+              - column: { name: model_id, value: 33333333-3333-3333-3333-333333333333 }
+              - column: { name: component_id, value: aaaaaaaa-0000-0000-0000-000000000002 }
+              - column: { name: type, value: TRANSMISSION }
+              - column: { name: created_at, valueDate: NOW() }
+              - column: { name: updated_at, valueDate: NOW() }
+              - column: { name: removed, valueBoolean: false }
+
+        - insert:
+            tableName: car_model_default_components
+            columns:
+              - column: { name: id, value: dddddddd-0000-0000-0000-000000000003 }
+              - column: { name: model_id, value: 33333333-3333-3333-3333-333333333333 }
+              - column: { name: component_id, value: aaaaaaaa-0000-0000-0000-000000000003 }
+              - column: { name: type, value: STEERING }
+              - column: { name: created_at, valueDate: NOW() }
+              - column: { name: updated_at, valueDate: NOW() }
+              - column: { name: removed, valueBoolean: false }
+
+        - insert:
+            tableName: car_model_default_components
+            columns:
+              - column: { name: id, value: dddddddd-0000-0000-0000-000000000004 }
+              - column: { name: model_id, value: 33333333-3333-3333-3333-333333333333 }
+              - column: { name: component_id, value: aaaaaaaa-0000-0000-0000-000000000004 }
+              - column: { name: type, value: INTERIOR }
+              - column: { name: created_at, valueDate: NOW() }
+              - column: { name: updated_at, valueDate: NOW() }
+              - column: { name: removed, valueBoolean: false }
+
+
+
+        - insert:
+            tableName: cars
+            columns:
+              - column: { name: id, value: 22222222-2222-2222-2222-222222222222 }
+              - column: { name: model_id, value: 33333333-3333-3333-3333-333333333333 }
+              - column: { name: color, value: black }
+              - column: { name: available, valueBoolean: true }
+              - column: { name: price, value: 50000 }
+              - column: { name: created_at, valueDate: NOW() }
+              - column: { name: updated_at, valueDate: NOW() }
+              - column: { name: removed, valueBoolean: false }
+
+
+
+        - insert:
+            tableName: car_configurations
+            columns:
+              - column: { name: id, value: 44444444-4444-4444-4444-444444444444 }
+              - column: { name: model_id, value: 33333333-3333-3333-3333-333333333333 }
+              - column: { name: total_price, value: 52000 }
+              - column: { name: created_at, valueDate: NOW() }
+              - column: { name: updated_at, valueDate: NOW() }
+              - column: { name: removed, valueBoolean: false }
+
+
+  - changeSet:
+      id: 9
+      author: you
+
+      changes:
+        - createTable:
+            tableName: build_orders
+
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: source_order_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: removed
+                  type: boolean
+                  constraints:
+                    nullable: false
+
+
+  - changeSet:
+      id: 10
+      author: you
+      changes:
+        - createTable:
+            tableName: outbox_events
+            columns:
+
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: topic
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: payload
+                  type: text
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: processed
+                  type: boolean
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false

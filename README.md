@@ -1,205 +1,282 @@
-
-
 # Car Dealership Backend System
 
 Backend-приложение для мультибрендового автосалона с поддержкой:
 
-* конфигуратора автомобилей
-* оформления заказов
-* управления складом и запчастями
-* записи на тест-драйв
-* ролевой модели доступа
+* конфигуратора автомобилей;
+* оформления заказов;
+* управления складом и автомобилями;
+* ролевой модели доступа;
+* микросервисного взаимодействия;
+* асинхронной обработки бизнес-событий.
 
-Проект демонстрирует применение **DDD, многослойной архитектуры и современных backend-технологий**.
+Проект демонстрирует применение:
 
----
-
-## Технологии
-
-* **Java 21**
-* **Spring Boot**
-* **Spring Web**
-* **Spring Data JPA**
-* **Spring Security**
-* **PostgreSQL**
-* **Liquibase**
-* **Keycloak**
-* **MapStruct**
-* **Gradle**
-* **Docker**
-* **Testcontainers**
-* **JUnit 5**
+* DDD (Domain-Driven Design);
+* луковой архитектуры;
+* микросервисной архитектуры;
+* event-driven подхода;
+* современных backend-технологий Java/Spring.
 
 ---
 
-## Архитектура
+# Технологии
 
-Проект реализован с разделением на слои:
+* Java 21
+* Spring Boot
+* Spring Web
+* Spring Data JPA
+* Spring Security
+* PostgreSQL
+* Liquibase
+* Keycloak
+* Apache Kafka
+* Testcontainers
+* Docker
+* MapStruct
+* Gradle
+* JUnit 5
 
-### 🔹 Domain Layer (`domain`)
+---
 
-* бизнес-сущности (`Car`, `Order`, `CarModel`, `User`)
-* value objects (`ModelKey`)
-* enum'ы (FuelType, TransmissionType и др.)
+# Архитектура проекта
+
+Проект построен на основе многослойной архитектуры и DDD.
+
+## Domain Layer (`domain`)
+
+Содержит:
+
+* бизнес-сущности:
+
+  * `Car`
+  * `Order`
+  * `CarModel`
+  * `User`
+  * `Part`
+* value objects:
+
+  * `ModelKey`
+* enum'ы:
+
+  * `FuelType`
+  * `TransmissionType`
+  * `DriveType`
+  * `OrderStatus`
 * доменные исключения:
 
-    * `DomainValidationException`
-    * `NotSuitableComponentException`
-    * `EntityNotFoundException`
+  * `DomainValidationException`
+  * `EntityNotFoundException`
+  * `NotSuitableComponentException`
+
+Domain Layer инкапсулирует бизнес-правила системы.
 
 ---
 
-### 🔹 Application Layer (`application`)
+## Application Layer (`application`)
 
-* бизнес-логика:
+Содержит application services:
 
-    * `CarService`
-    * `OrderService`
-    * `UserService`
-    * `CarConfigurationApplicationService`
-* orchestration доменных операций
+* `CarService`
+* `OrderService`
+* `UserService`
+* `CarConfigurationApplicationService`
 
----
+Responsibilities:
 
-### 🔹 Persistence Layer (`persistence`)
-
-* JPA-сущности (`entityJpa`)
-* Spring Data репозитории
-* кастомные репозитории (`Jpa*Repository`)
-* спецификации (`CarModelSpecification`)
+* orchestration бизнес-операций;
+* coordination domain logic;
+* работа со сценариями приложения.
 
 ---
 
-### 🔹 Infrastructure Layer (`infrastructure`)
+## Persistence Layer (`persistence`)
 
-* реализации репозиториев (in-memory для проверок)
-* вспомогательная инфраструктура
+Содержит:
 
----
+* JPA entities (`entityJpa`);
+* Spring Data repositories;
+* кастомные JPA-репозитории;
+* Specifications для фильтрации.
 
-### 🔹 Presentation Layer (`presentation`)
+Примеры:
 
-* REST-контроллеры:
-
-    * `CarController`
-    * `OrderController`
-    * `TestRequestController`
-    * `UserController`
-* DTO:
-
-    * Request / Response модели
-* валидация входных данных
+* `JpaOrderRepository`
+* `JpaCarRepository`
+* `CarModelSpecification`
 
 ---
 
-### 🔹 Mapper Layer (`mapper`)
+## Infrastructure Layer (`infrastructure`)
 
-* MapStruct:
+Содержит:
 
-    * DTO ↔ Domain
-    * Domain ↔ JPA
-
----
-
-## Роли пользователей
-
-| Роль            | Описание                                   |
-| --------------- | ------------------------------------------ |
-| USER            | клиент, работает только со своими заказами |
-| MANAGER         | управляет заказами                         |
-| WAREHOUSE_ADMIN | управляет складом                          |
-| ADMIN           | полный доступ                              |
+* Kafka listeners/publishers;
+* Outbox Pattern;
+* инфраструктурные сервисы;
+* интеграцию между микросервисами.
 
 ---
 
-## Основной функционал
+## Presentation Layer (`presentation`)
 
-### Конфигуратор автомобилей
+REST API приложения.
 
-* выбор компонентов (колёса, интерьер и т.д.)
-* проверка совместимости компонентов
-* расчет стоимости конфигурации
-* доменная валидация
+Контроллеры:
 
----
+* `CarController`
+* `OrderController`
+* `UserController`
+* `TestRequestController`
 
-### Заказы
+Используются:
 
-* заказ автомобиля в наличии (`ExistedCarOrder`)
-* заказ с конфигурацией (`CustomOrder`)
-* жизненный цикл заказа (`OrderStatus`)
-* автоматическое назначение менеджера
-
----
-
-### Тест-драйв
-
-* оформление заявки (`TestRequest`)
-* управление доступными авто
+* DTO;
+* request/response модели;
+* validation annotations.
 
 ---
 
-### Склад и запчасти
+## Mapper Layer (`mapper`)
 
-* учет автомобилей
-* учет запчастей (`Part`)
-* редактирование данных
+Используется MapStruct для:
 
----
-
-## Фильтрация
-
-Реализована через:
-
-* **Spring Data Specifications**
-
-
-Фильтры:
-
-* бренд
-* модель
-* характеристики
-* компоненты
+* DTO ↔ Domain;
+* Domain ↔ JPA.
 
 ---
 
-## Тестирование
+# Микросервисная архитектура 
 
-### Unit-тесты
+Система разделена на два микросервиса.
 
-* `CarServiceTest`
-* `OrderServiceTest`
-* `CarConfiguratorTest`
-
----
-
-### Интеграционные тесты
-
-* `CarControllerIT`
-* `OrderControllerIT`
-* `TestDriveControllerIT`
-* `UserControllerIT`
-
-Используется:
-
-* **Testcontainers (PostgreSQL)**
-
-Проверяется:
-
-* REST API
-* репозитории
-* миграции
-* Spring Context
+| Сервис           | Ответственность                                  |
+| ---------------- | ------------------------------------------------ |
+| `OrderService`   | заказы, пользователи, бизнес-процессы оформления |
+| `StorageService` | склад, автомобили, конфигурации, сборка          |
 
 ---
 
-## Безопасность
+# Асинхронное взаимодействие
 
-* Spring Security + Keycloak
-* OAuth2
-* role-based access control (RBAC)
+Для межсервисного взаимодействия используется:
 
-### Проверка владельца заказа
+* Apache Kafka;
+* event-driven architecture;
+* Outbox Pattern.
+
+---
+
+## Реализованные события
+
+### OrderService → StorageService
+
+```text
+OrderSentForApprovalEvent
+```
+
+Отправляется после оформления заказа.
+
+---
+
+### StorageService → OrderService
+
+```text
+OrderApprovedEvent
+OrderRejectedEvent
+```
+
+Используются для подтверждения или отклонения заказа после проверки склада.
+
+---
+
+# Outbox Pattern
+
+Реализован паттерн гарантированной доставки сообщений.
+
+Особенности:
+
+* события сохраняются в таблицу `outbox_events`;
+* publisher асинхронно публикует события в Kafka;
+* реализована идемпотентность обработки;
+* предотвращается потеря сообщений при сбоях.
+
+---
+
+# Роли пользователей
+
+| Роль            | Описание            |
+| --------------- | ------------------- |
+| USER            | клиент              |
+| MANAGER         | управление заказами |
+| WAREHOUSE_ADMIN | управление складом  |
+| ADMIN           | полный доступ       |
+
+---
+
+# Основной функционал
+
+## Конфигуратор автомобилей
+
+Поддерживает:
+
+* выбор компонентов;
+* проверку совместимости;
+* расчет стоимости;
+* доменную валидацию.
+
+---
+
+## Заказы
+
+Поддерживаются:
+
+* заказ автомобиля в наличии (`ExistedCarOrder`);
+* заказ кастомной конфигурации (`CustomOrder`);
+* жизненный цикл заказа;
+* автоматическое назначение менеджера.
+
+---
+
+## Склад
+
+Реализовано:
+
+* управление автомобилями;
+* учет доступности автомобилей;
+* управление компонентами;
+* управление конфигурациями.
+
+---
+
+# Фильтрация
+
+Используются:
+
+* Spring Data Specifications.
+
+Поддерживаются фильтры:
+
+* бренд;
+* модель;
+* характеристики;
+* компоненты;
+* тип топлива;
+* трансмиссия.
+
+---
+
+# Безопасность
+
+Используются:
+
+* Spring Security;
+* Keycloak;
+* OAuth2;
+* RBAC.
+
+---
+
+## Пример проверки доступа
 
 ```java
 @PreAuthorize("#order.userId == authentication.principal.id")
@@ -207,12 +284,16 @@ Backend-приложение для мультибрендового автос�
 
 ---
 
-## База данных
+# База данных
 
-* PostgreSQL (Docker)
-* Liquibase
+Используется:
 
-### Базовая сущность:
+* PostgreSQL;
+* Liquibase migrations.
+
+---
+
+## Базовая сущность
 
 ```java
 UUID id;
@@ -223,28 +304,76 @@ boolean removed;
 
 ---
 
-## REST API
+# REST API
 
-Основные контроллеры:
+Основные endpoints:
 
-* `/cars`
-* `/orders`
-* `/car-models`
-* `/components`
-* `/test-drives`
-* `/users`
+```http
+/cars
+/orders
+/car-models
+/components
+/test-drives
+/users
+```
 
 ---
 
-###  Swagger
+# Swagger
 
-```bash
+```http
 http://localhost:8080/swagger-ui.html
 ```
 
 ---
 
-## Запуск
+# Тестирование
+
+## Unit-тесты
+
+Реализованы:
+
+* `CarServiceTest`
+* `OrderServiceTest`
+* `CarConfiguratorTest`
+
+---
+
+## Интеграционные тесты
+
+Реализованы:
+
+* `CarControllerIT`
+* `OrderControllerIT`
+* `UserControllerIT`
+* Kafka integration tests
+* Outbox integration tests
+
+---
+
+## Используется
+
+* Testcontainers;
+* PostgreSQL Container;
+* Kafka Container.
+
+---
+
+## Проверяется
+
+* REST API;
+* Kafka messaging;
+* listeners;
+* Outbox processing;
+* миграции;
+* Spring Context;
+* взаимодействие микросервисов.
+
+---
+
+# Запуск проекта
+
+## Docker Compose
 
 ```bash
 docker-compose up --build
@@ -252,51 +381,93 @@ docker-compose up --build
 
 ---
 
-## Структура проекта
+# Структура проекта
 
 ```bash
-src/main/java/org/autosalon
-├── application
-├── domain
-├── infrastructure
-├── mapper
-├── persistence
-└── presentation
+order-service/
+storage-service/
 ```
 
 ---
 
-## Эволюция проекта
+# Эволюция проекта
 
-| Этап | Описание                   |
-| - | -------------------------- |
-| 1 | DDD, in-memory репозитории |
-| 2 | Spring Boot, JPA, PostgreSQL |
-| 3 | Security + Keycloak        |
-| 4 | В процессе — микросервисы  |
-
----
-
-## Планы (этап 4)
-
-* разделение на:
-
-    * OrderService
-    * StorageService
-* брокер сообщений (Kafka / RabbitMQ)
-* Outbox Pattern
-* асинхронная обработка заказов
+| Этап | Описание                                  |
+| ---- | ----------------------------------------- |
+| 1  | DDD, domain model, in-memory repositories |
+| 2  | Spring Boot, REST API, PostgreSQL, JPA    |
+| 3  | Spring Security, Keycloak, RBAC           |
+| 4  | Микросервисы, Kafka, Outbox Pattern       |
 
 ---
 
-## Что демонстрирует проект
+# Планы развития
 
-* DDD-подход
-* многослойную архитектуру
-* работу с JPA и спецификациями
-* безопасный REST API
-* интеграцию с Keycloak
-* тестирование (unit + integration)
+В следующем этапе планируется добавить синхронное межсервисное взаимодействие через gRPC.
 
+---
 
+# Планируемая архитектура 
+
+## StorageService
+
+Планируется:
+
+* реализовать gRPC server;
+* предоставлять список автомобилей в наличии;
+* возвращать только доступные автомобили.
+
+---
+
+## OrderService
+
+Планируется:
+
+* реализовать gRPC client;
+* получать список автомобилей через gRPC;
+* предоставлять REST API поверх gRPC.
+
+---
+
+# Планируемые REST endpoints
+
+```http
+GET /api/v1/cars
+GET /api/v1/cars/{id}
+```
+
+---
+
+# Надежность
+
+Планируется:
+
+* timeout для gRPC client;
+* обработка `503 Service Unavailable`;
+* базовая отказоустойчивость межсервисных вызовов.
+
+---
+
+# Планируемые тесты
+
+* integration tests для gRPC server;
+* integration tests для gRPC client;
+* timeout tests;
+* service unavailable tests.
+
+---
+
+# Что демонстрирует проект
+
+Проект демонстрирует:
+
+* DDD-подход;
+* луковую архитектуру;
+* микросервисную архитектуру;
+* event-driven communication;
+* Kafka integration;
+* Outbox Pattern;
+* Spring Security + Keycloak;
+* безопасный REST API;
+* интеграционное тестирование через Testcontainers.
 
